@@ -47,6 +47,8 @@ export default function Dashboard() {
     setHistory(data)
   }
 
+  const selectedCrypto = cryptos.find(c => c.id === selectedId)
+
   return (
     <div className="dashboard-container">
 
@@ -72,13 +74,24 @@ export default function Dashboard() {
           {loading ? (
             <p className="loading">Cargando...</p>
           ) : (
-            <CryptoTable cryptos={cryptos} onSelect={handleSelect} />
+            <CryptoTable
+              cryptos={cryptos}
+              onSelect={handleSelect}
+              selectedId={selectedId ?? undefined}
+            />
           )}
         </div>
 
         <div className="chart-container">
           {selectedId ? (
-            <CryptoChart data={history} />
+            <>
+              {selectedCrypto && (
+                <h2>
+                  {selectedCrypto.name} ({selectedCrypto.symbol})
+                </h2>
+              )}
+              <CryptoChart data={history} />
+            </>
           ) : (
             <div className="placeholder">
               <p>Selecciona una crypto para ver la grafica 📈</p>

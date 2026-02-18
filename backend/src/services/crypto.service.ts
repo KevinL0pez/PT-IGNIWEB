@@ -38,15 +38,16 @@ export const cryptoService = {
       )
 
       const data = response.data.data[crypto.symbol]
+      if (data?.quote?.USD?.price == null) continue
 
       await cryptoRepository.insertPriceSnapshot({
         crypto_id: crypto.id,
-        price: data.quote.USD.price,
-        percent_change_1h: data.quote.USD.percent_change_1h,
-        percent_change_24h: data.quote.USD.percent_change_24h,
-        percent_change_7d: data.quote.USD.percent_change_7d,
-        volume_24h: data.quote.USD.volume_24h,
-        market_cap: data.quote.USD.market_cap
+        price_usd: data.quote.USD.price,
+        percent_change_1h: data.quote.USD.percent_change_1h ?? null,
+        percent_change_24h: data.quote.USD.percent_change_24h ?? null,
+        percent_change_7d: data.quote.USD.percent_change_7d ?? null,
+        volume_24h: data.quote.USD.volume_24h ?? null,
+        market_cap: data.quote.USD.market_cap ?? null
       })
     }
   },
