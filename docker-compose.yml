@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  oracle-db:
+    image: container-registry.oracle.com/database/free:latest
+    container_name: oracle-db
+    ports:
+      - "1521:1521"
+      - "5500:5500"
+    environment:
+      ORACLE_PWD: "Oracle123"
+      ORACLE_CHARACTERSET: "AL32UTF8"
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+      - ./init-scripts/oracle:/container-entrypoint-initdb.d
+    restart: always
+
+  postgres-db:
+    image: postgres:15
+    container_name: postgres-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: testdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts/postgres:/docker-entrypoint-initdb.d
+    restart: always
+
+volumes:
+  oracle_data:
+  postgres_data:
