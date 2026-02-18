@@ -31,9 +31,12 @@ export default function Dashboard() {
 
   const handleAdd = async (symbol: string) => {
     setLoading(true)
-    await addCrypto(symbol)
-    await loadCryptos()
-    setLoading(false)
+    try {
+      await addCrypto(symbol)
+      await loadCryptos()
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleSelect = async (id: number) => {
@@ -48,7 +51,7 @@ export default function Dashboard() {
     <div className="dashboard-container">
 
       <header className="dashboard-header">
-        <h1>📊 Crypto Investment Dashboard</h1>
+        <h1>CryptoInvestment</h1>
         <SearchBar onSearch={handleAdd} />
       </header>
 
@@ -67,7 +70,7 @@ export default function Dashboard() {
       <section className="content-grid">
         <div className="table-container">
           {loading ? (
-            <p className="loading">Loading...</p>
+            <p className="loading">Cargando...</p>
           ) : (
             <CryptoTable cryptos={cryptos} onSelect={handleSelect} />
           )}
@@ -78,7 +81,7 @@ export default function Dashboard() {
             <CryptoChart data={history} />
           ) : (
             <div className="placeholder">
-              <p>Select a crypto to see chart 📈</p>
+              <p>Selecciona una crypto para ver la grafica 📈</p>
             </div>
           )}
         </div>

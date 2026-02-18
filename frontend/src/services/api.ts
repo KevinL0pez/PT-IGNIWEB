@@ -12,6 +12,18 @@ export async function addCrypto(symbol: string) {
     body: JSON.stringify({ symbol })
   })
 
+  if (!res.ok) {
+    let message = res.status === 404 ? 'Crypto no encontrada' : 'No se pudo agregar la crypto'
+    try {
+      const data = await res.json()
+      if (data?.message) message = data.message
+      else if (data?.error) message = data.error
+    } catch {
+      // usar mensaje por defecto según status
+    }
+    throw new Error(message)
+  }
+
   return res.json()
 }
 

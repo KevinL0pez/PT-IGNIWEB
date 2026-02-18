@@ -13,10 +13,9 @@ export const cryptoService = {
     )
 
     const data = response.data.data[symbol]
-    console.log(data);
     
     if (!data) {
-      const error: any = new Error('Crypto not found')
+      const error: any = new Error('Crypto no encontrada')
       error.status = 404
       throw error
     }

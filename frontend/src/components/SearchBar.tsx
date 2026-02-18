@@ -27,7 +27,7 @@ export default function SearchBar({ onSearch }: Props) {
       setSymbol('')
     } catch (err) {
       console.error(err)
-      setError('Crypto no encontrada...')
+      setError(err instanceof Error ? err.message : 'Crypto no encontrada')
     } finally {
       setLoading(false)
     }
