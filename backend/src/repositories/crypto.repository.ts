@@ -27,7 +27,7 @@ export const cryptoRepository = {
        VALUES ($1, $2, $3, $4)
        ON CONFLICT (cmc_id) DO NOTHING
        RETURNING *`,
-      [data.id, data.name, data.symbol, data.slug]
+      [data.cmc_id, data.name, data.symbol, data.slug]
     )
   
     return result.rows[0]
