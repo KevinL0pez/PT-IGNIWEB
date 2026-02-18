@@ -1,13 +1,10 @@
 CREATE DATABASE crypto_investment;
 USE crypto_investment;
 
-CREATE TABLE investor (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(150) NOT NULL UNIQUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
+-- -----------------------------------------------
+-- Tabla: crypto_currency
+-- Almacena las criptomonedas agregadas al sistema.
+-- -----------------------------------------------
 CREATE TABLE crypto_currency (
     id BIGSERIAL PRIMARY KEY,
     cmc_id INTEGER NOT NULL UNIQUE,
@@ -17,23 +14,11 @@ CREATE TABLE crypto_currency (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE investor_crypto (
-    id BIGSERIAL PRIMARY KEY,
-    investor_id BIGINT NOT NULL,
-    crypto_id BIGINT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_investor
-        FOREIGN KEY (investor_id)
-        REFERENCES investor(id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_crypto
-        FOREIGN KEY (crypto_id)
-        REFERENCES crypto_currency(id)
-        ON DELETE CASCADE,
-    CONSTRAINT unique_investor_crypto
-        UNIQUE (investor_id, crypto_id)
-);
-
+-- -----------------------------------------------
+-- Tabla: price_snapshot
+-- Registra cada captura de precio para el historial
+-- de líneas de tiempo.
+-- -----------------------------------------------
 CREATE TABLE price_snapshot (
     id BIGSERIAL PRIMARY KEY,
     crypto_id BIGINT NOT NULL,
@@ -50,6 +35,7 @@ CREATE TABLE price_snapshot (
         ON DELETE CASCADE
 );
 
+-- Índice para consultas de historial por rango de tiempo
 CREATE INDEX idx_crypto_date 
 ON price_snapshot (crypto_id, recorded_at);
 

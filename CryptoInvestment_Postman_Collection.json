@@ -1,0 +1,281 @@
+{
+	"info": {
+		"_postman_id": "crypto-investment-collection",
+		"name": "CryptoInvestment - CoinMarketCap API",
+		"description": "Colección de Postman para la investigación y pruebas de los endpoints de CoinMarketCap API utilizados en el proyecto CryptoInvestment.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "CMC_API_KEY",
+			"value": "TU_API_KEY_AQUI",
+			"type": "string"
+		},
+		{
+			"key": "CMC_BASE_URL",
+			"value": "https://pro-api.coinmarketcap.com/v1",
+			"type": "string"
+		},
+		{
+			"key": "BACKEND_URL",
+			"value": "http://localhost:3000/api",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "CoinMarketCap API",
+			"description": "Endpoints directos de la API de CoinMarketCap",
+			"item": [
+				{
+					"name": "Obtener cotización por símbolo (BTC)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-CMC_PRO_API_KEY",
+								"value": "{{CMC_API_KEY}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{CMC_BASE_URL}}/cryptocurrency/quotes/latest?symbol=BTC",
+							"host": ["{{CMC_BASE_URL}}"],
+							"path": ["cryptocurrency", "quotes", "latest"],
+							"query": [
+								{
+									"key": "symbol",
+									"value": "BTC",
+									"description": "Símbolo de la criptomoneda"
+								}
+							]
+						},
+						"description": "Obtiene la cotización más reciente de Bitcoin. Retorna precio, cambios porcentuales (1h, 24h, 7d), volumen 24h y market cap."
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener cotización por símbolo (ETH)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-CMC_PRO_API_KEY",
+								"value": "{{CMC_API_KEY}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{CMC_BASE_URL}}/cryptocurrency/quotes/latest?symbol=ETH",
+							"host": ["{{CMC_BASE_URL}}"],
+							"path": ["cryptocurrency", "quotes", "latest"],
+							"query": [
+								{
+									"key": "symbol",
+									"value": "ETH",
+									"description": "Símbolo de la criptomoneda"
+								}
+							]
+						},
+						"description": "Obtiene la cotización más reciente de Ethereum."
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener cotización múltiple (BTC,ETH,USDT)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-CMC_PRO_API_KEY",
+								"value": "{{CMC_API_KEY}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{CMC_BASE_URL}}/cryptocurrency/quotes/latest?symbol=BTC,ETH,USDT",
+							"host": ["{{CMC_BASE_URL}}"],
+							"path": ["cryptocurrency", "quotes", "latest"],
+							"query": [
+								{
+									"key": "symbol",
+									"value": "BTC,ETH,USDT",
+									"description": "Múltiples símbolos separados por coma"
+								}
+							]
+						},
+						"description": "Obtiene la cotización de múltiples criptomonedas en una sola solicitud."
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener cotización - Símbolo inválido",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-CMC_PRO_API_KEY",
+								"value": "{{CMC_API_KEY}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{CMC_BASE_URL}}/cryptocurrency/quotes/latest?symbol=INVALIDO123",
+							"host": ["{{CMC_BASE_URL}}"],
+							"path": ["cryptocurrency", "quotes", "latest"],
+							"query": [
+								{
+									"key": "symbol",
+									"value": "INVALIDO123",
+									"description": "Símbolo inválido para probar manejo de errores"
+								}
+							]
+						},
+						"description": "Prueba con un símbolo inexistente para verificar el comportamiento de error de la API."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Backend API (Local)",
+			"description": "Endpoints del backend de CryptoInvestment",
+			"item": [
+				{
+					"name": "Listar todas las criptomonedas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/cryptos",
+							"host": ["{{BACKEND_URL}}"],
+							"path": ["cryptos"]
+						},
+						"description": "Obtiene la lista de todas las criptomonedas agregadas con su precio más reciente, cambio 24h y volumen 24h."
+					},
+					"response": []
+				},
+				{
+					"name": "Agregar criptomoneda (BTC)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"symbol\": \"BTC\"\n}"
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/cryptos",
+							"host": ["{{BACKEND_URL}}"],
+							"path": ["cryptos"]
+						},
+						"description": "Agrega una criptomoneda por símbolo. Consulta CoinMarketCap para obtener los datos y la almacena en la BD."
+					},
+					"response": []
+				},
+				{
+					"name": "Agregar criptomoneda (ETH)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"symbol\": \"ETH\"\n}"
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/cryptos",
+							"host": ["{{BACKEND_URL}}"],
+							"path": ["cryptos"]
+						},
+						"description": "Agrega Ethereum a la lista de seguimiento."
+					},
+					"response": []
+				},
+				{
+					"name": "Historial de precios (7 días)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/cryptos/1/history?from=2026-02-11T00:00:00.000Z&to=2026-02-18T23:59:59.999Z",
+							"host": ["{{BACKEND_URL}}"],
+							"path": ["cryptos", "1", "history"],
+							"query": [
+								{
+									"key": "from",
+									"value": "2026-02-11T00:00:00.000Z",
+									"description": "Fecha de inicio (ISO 8601)"
+								},
+								{
+									"key": "to",
+									"value": "2026-02-18T23:59:59.999Z",
+									"description": "Fecha de fin (ISO 8601)"
+								}
+							]
+						},
+						"description": "Obtiene el historial de precios de la criptomoneda con id=1 en los últimos 7 días."
+					},
+					"response": []
+				},
+				{
+					"name": "Historial de precios (último mes)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/cryptos/1/history?from=2026-01-18T00:00:00.000Z&to=2026-02-18T23:59:59.999Z",
+							"host": ["{{BACKEND_URL}}"],
+							"path": ["cryptos", "1", "history"],
+							"query": [
+								{
+									"key": "from",
+									"value": "2026-01-18T00:00:00.000Z",
+									"description": "Fecha de inicio (30 días atrás)"
+								},
+								{
+									"key": "to",
+									"value": "2026-02-18T23:59:59.999Z",
+									"description": "Fecha de fin"
+								}
+							]
+						},
+						"description": "Obtiene el historial de precios del último mes para análisis de tendencia."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

@@ -48,16 +48,21 @@ export default function Dashboard() {
   const [timeRange, setTimeRange] = useState<TimeRange>('7d')
   const [loading, setLoading] = useState(false)
   const [chartLoading, setChartLoading] = useState(false)
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
 
   const loadCryptos = useCallback(async () => {
     const data = await getCryptos()
     setCryptos(data)
+    setLastUpdated(new Date())
   }, [])
 
   useEffect(() => {
     let cancelled = false
     getCryptos().then((data) => {
-      if (!cancelled) setCryptos(data)
+      if (!cancelled) {
+        setCryptos(data)
+        setLastUpdated(new Date())
+      }
     })
     return () => { cancelled = true }
   }, [])
@@ -119,8 +124,8 @@ export default function Dashboard() {
         </div>
 
         <div className="summary-card">
-          <h3>Last Updated</h3>
-          <p>{new Date().toLocaleTimeString()}</p>
+          <h3>Última Actualización</h3>
+          <p>{lastUpdated ? lastUpdated.toLocaleTimeString() : '—'}</p>
         </div>
       </section>
 
