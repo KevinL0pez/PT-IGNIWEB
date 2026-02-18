@@ -10,11 +10,11 @@ import '../css/dashboard.css'
 
 export type TimeRange = '1h' | '1d' | '7d' | '30d'
 
-const TIME_RANGES: { value: TimeRange; label: string }[] = [
-  { value: '1h', label: '1 hora' },
-  { value: '1d', label: '1 día' },
-  { value: '7d', label: '7 días' },
-  { value: '30d', label: '30 días' },
+const TIME_RANGES: { value: TimeRange; label: string; title: string }[] = [
+  { value: '1h', label: 'Última hora', title: 'Ver datos de la última hora' },
+  { value: '1d', label: 'Hoy', title: 'Ver datos de hoy (desde las 00:00)' },
+  { value: '7d', label: 'Última semana', title: 'Ver datos de los últimos 7 días' },
+  { value: '30d', label: 'Último mes', title: 'Ver datos del último mes' },
 ]
 
 function getRangeDates(range: TimeRange): { from: string; to: string } {
@@ -146,14 +146,16 @@ export default function Dashboard() {
                     {selectedCrypto.name} ({selectedCrypto.symbol})
                   </h2>
                 )}
-                <div className="chart-range-selector" role="group" aria-label="Rango de tiempo">
-                  {TIME_RANGES.map(({ value, label }) => (
+                <div className="chart-range-selector" role="group" aria-label="Período de la gráfica">
+                  <span className="chart-range-label-text">Período:</span>
+                  {TIME_RANGES.map(({ value, label, title }) => (
                     <button
                       key={value}
                       type="button"
                       className={`chart-range-btn ${timeRange === value ? 'active' : ''}`}
                       onClick={() => handleTimeRangeChange(value)}
                       disabled={chartLoading}
+                      title={title}
                     >
                       {label}
                     </button>

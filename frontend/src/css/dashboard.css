@@ -100,7 +100,15 @@
 .chart-range-selector {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.5rem;
+}
+
+.chart-range-label-text {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 500;
+  margin-right: 0.25rem;
 }
 
 .chart-range-btn {

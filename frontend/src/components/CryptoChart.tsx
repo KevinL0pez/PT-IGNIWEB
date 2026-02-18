@@ -73,6 +73,27 @@ function formatAxisDate(recordedAt: string): string {
   })
 }
 
+function formatAxisTime(recordedAt: string): string {
+  const d = new Date(recordedAt)
+  return d.toLocaleTimeString(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  })
+}
+
+/** Si todos los datos son del mismo día, usar hora en el eje; si no, fecha. */
+function chooseAxisFormat(data: { recorded_at: string }[]): (recordedAt: string) => string {
+  if (!data.length) return formatAxisDate
+  const first = new Date(data[0].recorded_at)
+  const last = new Date(data[data.length - 1].recorded_at)
+  const sameDay =
+    first.getFullYear() === last.getFullYear() &&
+    first.getMonth() === last.getMonth() &&
+    first.getDate() === last.getDate()
+  return sameDay ? formatAxisTime : formatAxisDate
+}
+
 function formatTooltipDate(recordedAt: string): string {
   const d = new Date(recordedAt)
   return d.toLocaleString(undefined, {
@@ -100,12 +121,13 @@ export default function CryptoChart({ data, symbol = "chart" }: Props) {
     )
   }
 
+  const axisLabelFormat = chooseAxisFormat(data)
   const formattedData = data.map((item) => {
     const priceUsd = Number(item.price_usd)
     return {
       ...item,
       price_usd: priceUsd,
-      dateLabel: formatAxisDate(item.recorded_at),
+      dateLabel: axisLabelFormat(item.recorded_at),
       fullDate: item.recorded_at,
     }
   })
@@ -202,7 +224,11 @@ export default function CryptoChart({ data, symbol = "chart" }: Props) {
 
             <Tooltip
               content={<ChartTooltip onActivePoint={handleActivePoint} />}
-              cursor={{ stroke: "#94a3b8", strokeWidth: 1, strokeDasharray: "4 2" }}
+              cursor={{
+                stroke: "#64748b",
+                strokeWidth: 2,
+                strokeDasharray: "0",
+              }}
             />
 
             <Area
@@ -212,6 +238,12 @@ export default function CryptoChart({ data, symbol = "chart" }: Props) {
               strokeWidth={2}
               fillOpacity={1}
               fill={`url(#${gradientId})`}
+              activeDot={{
+                r: 6,
+                fill: "white",
+                stroke: isPositive ? "#16c784" : "#ea3943",
+                strokeWidth: 2,
+              }}
             />
           </AreaChart>
         </ResponsiveContainer>
