@@ -11,14 +11,18 @@ interface Props {
 export default function CryptoTable({ cryptos, onSelect, selectedId }: Props) {
   return (
     <div className="table-wrapper">
-      <table className="crypto-table">
+      <div className="crypto-table-header">
+        <h3 className="crypto-table-title">Criptomonedas</h3>
+        <p className="crypto-table-hint">Haz clic en una fila para ver la gráfica</p>
+      </div>
+      <table className="crypto-table" role="grid" aria-label="Listado de criptomonedas">
         <thead>
           <tr>
-            <th>Nombre</th>
-            <th>Crypto</th>
-            <th>Precio</th>
-            <th>24h %</th>
-            <th>Volumen</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Símbolo</th>
+            <th scope="col" className="th-numeric">Precio (USD)</th>
+            <th scope="col" className="th-numeric">Cambio 24h</th>
+            <th scope="col" className="th-numeric">Volumen 24h</th>
           </tr>
         </thead>
         <tbody>
