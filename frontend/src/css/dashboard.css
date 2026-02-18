@@ -82,6 +82,56 @@
   box-sizing: border-box;
 }
 
+/* Selector de rango temporal (1h, 1d, 7d, 30d) */
+.chart-header-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.chart-header-row h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.chart-range-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chart-range-btn {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #475569;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.chart-range-btn:hover:not(:disabled) {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+
+.chart-range-btn.active {
+  background: #6366f1;
+  border-color: #6366f1;
+  color: white;
+}
+
+.chart-range-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 /* Chart: vista consolidada para inversores, timeline y responsive */
 .crypto-chart-wrap {
   width: 100%;
@@ -95,6 +145,26 @@
 .chart-range-label {
   font-size: 0.8rem;
   color: #64748b;
+}
+
+.chart-dynamic-price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.chart-dynamic-date {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.chart-dynamic-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
 }
 
 .chart-period-summary {

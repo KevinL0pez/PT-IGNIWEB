@@ -9,5 +9,5 @@ export interface Crypto {
 
 export interface PriceHistory {
   recorded_at: string;
-  price_usd: number;
+  price_usd: number | string;
 }

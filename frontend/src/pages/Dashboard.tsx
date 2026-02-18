@@ -8,11 +8,46 @@ import CryptoChart from '../components/CryptoChart'
 
 import '../css/dashboard.css'
 
+export type TimeRange = '1h' | '1d' | '7d' | '30d'
+
+const TIME_RANGES: { value: TimeRange; label: string }[] = [
+  { value: '1h', label: '1 hora' },
+  { value: '1d', label: '1 día' },
+  { value: '7d', label: '7 días' },
+  { value: '30d', label: '30 días' },
+]
+
+function getRangeDates(range: TimeRange): { from: string; to: string } {
+  const now = new Date()
+  const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999)
+  const to = endOfToday.toISOString()
+  let from: Date
+  switch (range) {
+    case '1h':
+      from = new Date(Date.now() - 60 * 60 * 1000)
+      break
+    case '1d':
+      from = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
+      break
+    case '7d':
+      from = new Date(Date.now() - 7 * 86400000)
+      break
+    case '30d':
+      from = new Date(Date.now() - 30 * 86400000)
+      break
+    default:
+      from = new Date(Date.now() - 7 * 86400000)
+  }
+  return { from: from.toISOString(), to }
+}
+
 export default function Dashboard() {
   const [cryptos, setCryptos] = useState<Crypto[]>([])
   const [history, setHistory] = useState<PriceHistory[]>([])
   const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [timeRange, setTimeRange] = useState<TimeRange>('7d')
   const [loading, setLoading] = useState(false)
+  const [chartLoading, setChartLoading] = useState(false)
 
   const loadCryptos = useCallback(async () => {
     const data = await getCryptos()
@@ -39,12 +74,32 @@ export default function Dashboard() {
     }
   }
 
+  const fetchHistory = useCallback(async (id: number, range: TimeRange) => {
+    const { from, to } = getRangeDates(range)
+    const data = await getHistory(id, from, to)
+    setHistory(data)
+  }, [])
+
   const handleSelect = async (id: number) => {
     setSelectedId(id)
-    const today = new Date().toISOString()
-    const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString()
-    const data = await getHistory(id, weekAgo, today)
-    setHistory(data)
+    setChartLoading(true)
+    try {
+      await fetchHistory(id, timeRange)
+    } finally {
+      setChartLoading(false)
+    }
+  }
+
+  const handleTimeRangeChange = async (range: TimeRange) => {
+    setTimeRange(range)
+    if (selectedId !== null) {
+      setChartLoading(true)
+      try {
+        await fetchHistory(selectedId, range)
+      } finally {
+        setChartLoading(false)
+      }
+    }
   }
 
   const selectedCrypto = cryptos.find(c => c.id === selectedId)
@@ -85,12 +140,31 @@ export default function Dashboard() {
         <div className="chart-container">
           {selectedId ? (
             <>
-              {selectedCrypto && (
-                <h2>
-                  {selectedCrypto.name} ({selectedCrypto.symbol})
-                </h2>
+              <div className="chart-header-row">
+                {selectedCrypto && (
+                  <h2>
+                    {selectedCrypto.name} ({selectedCrypto.symbol})
+                  </h2>
+                )}
+                <div className="chart-range-selector" role="group" aria-label="Rango de tiempo">
+                  {TIME_RANGES.map(({ value, label }) => (
+                    <button
+                      key={value}
+                      type="button"
+                      className={`chart-range-btn ${timeRange === value ? 'active' : ''}`}
+                      onClick={() => handleTimeRangeChange(value)}
+                      disabled={chartLoading}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {chartLoading ? (
+                <p className="loading">Cargando gráfica...</p>
+              ) : (
+                <CryptoChart data={history} symbol={selectedCrypto?.symbol} />
               )}
-              <CryptoChart data={history} symbol={selectedCrypto?.symbol} />
             </>
           ) : (
             <div className="placeholder">

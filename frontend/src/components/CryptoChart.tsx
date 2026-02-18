@@ -1,3 +1,4 @@
+import { useState, useCallback } from "react"
 import {
   XAxis,
   YAxis,
@@ -16,30 +17,49 @@ interface Props {
 }
 
 interface TooltipPayloadItem {
-  value?: number
-  payload?: { fullDate?: string }
+  value?: number | string
+  payload?: { fullDate?: string; price_usd?: number }
+}
+
+interface ActivePoint {
+  fullDate: string
+  price_usd: number
+}
+
+function formatPrice(price: number): string {
+  return `$${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 }
 
 function ChartTooltip({
   active,
   payload,
+  onActivePoint,
 }: {
   active?: boolean
   payload?: TooltipPayloadItem[]
+  onActivePoint?: (point: ActivePoint | null) => void
 }) {
-  if (!active || !payload?.length || !payload[0].payload?.fullDate) return null
-  const price = payload[0].value
+  if (!payload?.length || !payload[0].payload?.fullDate) {
+    onActivePoint?.(null)
+    return null
+  }
+  const rawPrice = payload[0].value ?? payload[0].payload?.price_usd
+  const price = rawPrice !== undefined && rawPrice !== null ? Number(rawPrice) : NaN
+  const fullDate = payload[0].payload!.fullDate!
+
+  if (active && Number.isFinite(price)) {
+    onActivePoint?.({ fullDate, price_usd: price })
+  } else {
+    onActivePoint?.(null)
+  }
+
+  if (!active) return null
+
+  const priceFormatted = Number.isFinite(price) ? formatPrice(price) : "—"
   return (
     <div className="chart-tooltip">
-      <div className="chart-tooltip-date">
-        {formatTooltipDate(payload[0].payload!.fullDate!)}
-      </div>
-      <div className="chart-tooltip-price">
-        Precio:{" "}
-        {typeof price === "number"
-          ? `$${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-          : "—"}
-      </div>
+      <div className="chart-tooltip-date">{formatTooltipDate(fullDate)}</div>
+      <div className="chart-tooltip-price">Precio: {priceFormatted}</div>
     </div>
   )
 }
@@ -62,6 +82,16 @@ function formatTooltipDate(recordedAt: string): string {
 }
 
 export default function CryptoChart({ data, symbol = "chart" }: Props) {
+  const [activePoint, setActivePoint] = useState<ActivePoint | null>(null)
+  const handleActivePoint = useCallback((point: ActivePoint | null) => {
+    setActivePoint((prev) => {
+      if (point === null) return null
+      if (prev?.fullDate === point.fullDate && prev?.price_usd === point.price_usd)
+        return prev
+      return point
+    })
+  }, [])
+
   if (!data || data.length === 0) {
     return (
       <div className="crypto-chart-wrap">
@@ -70,11 +100,15 @@ export default function CryptoChart({ data, symbol = "chart" }: Props) {
     )
   }
 
-  const formattedData = data.map((item) => ({
-    ...item,
-    dateLabel: formatAxisDate(item.recorded_at),
-    fullDate: item.recorded_at,
-  }))
+  const formattedData = data.map((item) => {
+    const priceUsd = Number(item.price_usd)
+    return {
+      ...item,
+      price_usd: priceUsd,
+      dateLabel: formatAxisDate(item.recorded_at),
+      fullDate: item.recorded_at,
+    }
+  })
 
   const firstPrice = formattedData[0].price_usd
   const lastPrice = formattedData[formattedData.length - 1].price_usd
@@ -90,11 +124,25 @@ export default function CryptoChart({ data, symbol = "chart" }: Props) {
 
   const gradientId = `colorPrice-${symbol.replace(/\W/g, "")}`
 
+  const displayPoint = activePoint ?? {
+    fullDate: lastDate,
+    price_usd: lastPrice,
+  }
+
   return (
     <div className="crypto-chart-wrap">
       <div className="chart-timeline-header">
         <span className="chart-range-label" title="Rango de tiempo de los datos">
           Rango: {rangeLabel}
+        </span>
+      </div>
+
+      <div className="chart-dynamic-price" aria-live="polite">
+        <span className="chart-dynamic-date">
+          {formatTooltipDate(displayPoint.fullDate)}
+        </span>
+        <span className="chart-dynamic-value">
+          {formatPrice(displayPoint.price_usd)}
         </span>
       </div>
 
@@ -152,7 +200,10 @@ export default function CryptoChart({ data, symbol = "chart" }: Props) {
               domain={["auto", "auto"]}
             />
 
-            <Tooltip content={<ChartTooltip />} />
+            <Tooltip
+              content={<ChartTooltip onActivePoint={handleActivePoint} />}
+              cursor={{ stroke: "#94a3b8", strokeWidth: 1, strokeDasharray: "4 2" }}
+            />
 
             <Area
               type="monotone"
