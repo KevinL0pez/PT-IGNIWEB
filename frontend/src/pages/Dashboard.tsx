@@ -90,7 +90,7 @@ export default function Dashboard() {
                   {selectedCrypto.name} ({selectedCrypto.symbol})
                 </h2>
               )}
-              <CryptoChart data={history} />
+              <CryptoChart data={history} symbol={selectedCrypto?.symbol} />
             </>
           ) : (
             <div className="placeholder">

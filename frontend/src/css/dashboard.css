@@ -82,6 +82,77 @@
   box-sizing: border-box;
 }
 
+/* Chart: vista consolidada para inversores, timeline y responsive */
+.crypto-chart-wrap {
+  width: 100%;
+  min-width: 0;
+}
+
+.chart-timeline-header {
+  margin-bottom: 0.5rem;
+}
+
+.chart-range-label {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.chart-period-summary {
+  font-size: 0.85rem;
+  color: #475569;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.chart-period-summary .positive {
+  color: #16c784;
+  font-weight: 600;
+}
+
+.chart-period-summary .negative {
+  color: #ea3943;
+  font-weight: 600;
+}
+
+.chart-sep {
+  color: #cbd5e1;
+  user-select: none;
+}
+
+.chart-responsive {
+  width: 100%;
+  min-height: 280px;
+}
+
+.chart-empty {
+  text-align: center;
+  color: #64748b;
+  padding: 2rem 1rem;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.chart-tooltip {
+  background: #1e293b;
+  color: #f8fafc;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.chart-tooltip-date {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.chart-tooltip-price {
+  opacity: 0.95;
+}
+
 .placeholder {
   text-align: center;
   color: #888;
